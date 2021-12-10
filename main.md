@@ -17,7 +17,8 @@
     - Fact vs Dimensional tables
     - Star Schema, surrogate keys, dimensional modelling
     - Fuentes: https://www.guru99.com/data-warehousing.html , https://snir.dev/talks/data-warehouse-schema-design , The Data Warehouse Toolkit: The Definitive Guide to Dimensional Modeling , https://www.youtube.com/watch?v=tr2KcekX2kk 
-Data lake
+
+- Data lake
 Columnar databases
 Arquitectura del data lake: Particiones, batch, speed y serving.  
 Arquitecturas: Lambda 

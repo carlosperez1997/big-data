@@ -165,9 +165,9 @@ To reduce storage costs, store summarized data into disk tapes. Also, the trade-
 
 # OLAP vs OLTP
 
-OLTP, **Online Transaction Processing, is the most traditional processing system.** It is able to manage transaction-oriented applications and can be characterized by a large number of short, atomic database operations, such as inserts, updates, and deletes, that are quite common in your day-to-day application. Common examples include online banking and e-commerce applications.
+OLTP, **Online Transaction Processing, is the most traditional processing system.** It is able to manage transaction-oriented applications and can be characterized by a large number of short, atomic database operations, such as inserts, updates, and deletes, that are quite common in your day-to-day application. Common examples include online banking and e-commerce applications. **Day to day operations of an application.**
 
-OLAP, **Online Analytical Processing, manages historical or archival data.** It is characterized by a relatively low volume of transactions. OLAP systems are typically used for analytical purposes — to extract insights and knowledge from bulk data, merged from multiple sources. Unlike OLTP, the goal for OLAP systems is to have a limited amount of transactions, each consisting of mostly bulk reads and writes. Data warehouses are the typical infrastructure to maintain these systems.
+OLAP, **Online Analytical Processing, manages historical or archival data.** It is characterized by a relatively low volume of transactions. OLAP systems are typically used for analytical purposes — to extract insights and knowledge from bulk data, merged from multiple sources. Unlike OLTP, the goal for OLAP systems is to have a limited amount of transactions, each consisting of mostly bulk reads and writes. **Data warehouses are the typical infrastructure to maintain these systems.** **Online query and analysis of business entities.**
 
 Hopefully, by now, you are able to distinguish between both data processing systems easily. Both OLTP and OLAP systems have been around for quite some time, but recently, with the boom of data mining and machine learning techniques, the demand for OLAP systems has increased. Choosing a suitable technological infrastructure to host either system is also a crucial step to ensure your system or application is delivering the best performance for your needs.
 
@@ -177,13 +177,79 @@ Hopefully, by now, you are able to distinguish between both data processing syst
 | High volume of transactions   | Low volume of transactions       |
 | Typically normalized data   | Denormalized data       |
 | Require high availability    | Don’t usually require high availability       |
+| One thing at a time    |  Aggregations and questioning of many things at a time      |
+| Optimized for inserts and updates    |  Optimized for heavy reads |
+| Uses just the current state    | Needs history to track business progression over time  |
+| Optimal for application use, logical to the developer   | Optimal for business structure, understandable by business people  |
+| Data might be inconsistent and presented in different logical way to the user. We may have multiple fields with the same names that have different data in them   | Data must be consistent for reports. There is one and only one field for a data point that means one thing (calculated in one accepted way)  |
+|  The schema structure might change fundamentally for different application needs.  |  The schema must be consistent and flexible for different business needs. New business questions should not alter the schema in a way that invalidate old questions work  |
+
+
 
 
 # Data warehouse schema design
 
+## Normalization 3NF
+
+We don't want to duplicate data. So we use keys, so we avoid storing one-to-many or many-to-many relationships in a table. 
+
+![](https://www.guru99.com/images/1/022218_0848_ETLExtractT1.png)
+
 ## Fact tables and dimension tables
 
+### Dimension
+
+By what we measure things?
+The who, what, when, where etc. of things
+Examples: dates, products, countries...
+
+How many purchases have users from US made last year? We need dimensions to filter. 
+
+![](dimension.png)
+
+### Fact 
+
+A fact is an observation or event. Something to be measured.  
+
+Examples: Customer payment, user logins, product orders...
+
+From a user login we can have a customer fk, that tells us the name of the user, its country or birthday; but we can also get to know things about the product, or the date the transaction was made.
+
+In fact tables, we mix some dimensions with some facts. Facts have a meaning when with connect them to dimensions, so we know that the price corresponds to X product that was bought by Y customer. 
+
+![](fact.png)
+
+Facts change rapidly, but dimensions do not change often. The customer dimension might not change, their name would be the same, their birth date, it can change their email. 
+
 ## Kimball: Star schema
+
+Fact table is in the middle and dimension tables feed the fact table. Fact table is connected to dimension tables via keys.
+
+### Grain 
+The grain determines what each fact row contains and in what detail. The grain is defined by the dimensions in the fact table, and their details. 
+
+Dimension presence example: For analytics, the platform dimension (less detailed grain: mobile, desktop or more detailed grain: iOS, Android, Blackberry, Mac...). 
+
+The detail of the grain is defined by the business owners.
+
+### Surrogate key
+
+**The dimensions PK should be in control of the OLAP system.**
+
+Don't use a PK from an operational system:
+- Dimensions might change over time, to track changes the same on represented in the operational system might have multiple rows.
+
+- Dimensions may come from multiple sources, sinchronizing the PK system is an unnecessary headache. 
+
+- Decouple the OLTP system from the OLAP system.
+
+### Slowly changing dimensions
+
+Dimensions may change over time. There are multitple strategies to handle this:
+
+- Type 1: Override the data. Don't track dimension history.
+- Type 2: Add a new record for the new data, mark the old one inactive with inactivation date. RECOMMENDED!
+- Type 3: Column of previous values in the table. 
 
 
 https://www.guru99.com/data-warehousing.html
