@@ -164,19 +164,54 @@ However, **their underlying architecture introduces a considerable caveat: data 
 
 # Partitioning
 
+https://pages.matillion.com/rs/992-UIW-731/images/Matillion_Optimizing%20Amazon%20Redshift.pdf
 
-
-
-
-
-# Amazon Athena, Redshift and EMR
-
-https://blog.panoply.io/an-amazonian-battle-comparing-athena-and-redshift
-	
 https://discourse.getdbt.com/t/what-are-the-best-practices-to-partition-big-tables-in-redshift/1096/2
 
+
+
+
+# Amazon Athena, Redshift, Kinesis and EMR
+
+https://www.youtube.com/watch?v=wEOm6aiN4ww 
+
+
+- Amazon Athena
+
+**Athena is a serverless service and does not need any infrastructure to create, manage, or scale data sets. It works directly on top of Amazon S3 data sets.** It creates external tables and therefore does not manipulate S3 data sources, working as a read-only service from an S3 perspective. Athena uses Presto and ANSI SQL to query on the data sets. It also uses HiveQL for DDL statements.
+
+When should you use Athena?
+Amazon Athena should be used to run ad-hoc queries on Amazon S3 data sets using ANSI SQL. It can process structured, unstructured, and semi-structured data formats. It can also have data integration with BI tools or SQL clients using JDBC, or with QuickSight for easy visualizations. 
+
+- Amazon Redshift
+
+**Amazon Redshift to create and manage a petabyte-scale data warehouse service in the cloud which is fully managed by AWS.** Amazon Redshift data warehouse having the computing resources known as nodes, which are organized into a group called a cluster. Each cluster runs Amazon redshift engine and handles one or more databases.
+
+It has a Leader node and Compute node. The leader node manages communication with client programs and with the compute nodes. The compute nodes execute the compiled code and send intermediate results back to the leader node for final aggregation.
+
+Basically, Amazon Redshift is specifically designed for online analytic processing (OLAP) and business intelligence (BI) applications, which require complex queries against large datasets. Although, Amazon Redshift is an RDBMS, so it is compatible with other RDBMS applications. It provides online transaction processing (OLTP) functions such as inserting and deleting data, Amazon Redshift is optimized for high-performance analysis and reporting of very large datasets.
+
+When should you use Redshift?
+
+**It is recommended to use Amazon Redshift on large sets of structured data. It is scalable enough that even if new nodes are added to the cluster, it can be easily accommodated with few configuration changes.** Because it contains a number of replicas, even if any node is down, it interacts with other nodes and rebuilds the drive. Redshift can be integrated with Tableau, Informatica, Microstrategy, Pentaho, SAS, and other BI Tools. It can be used for log analysis, clickstream events, and real-time data sets.
+
+Amazon Redshift requires a cluster to set itself up. A significant amount of time is required to prepare and set up the cluster. Once the cluster is ready to use, we need to load data into the tables. This also comes with a lag time depending on the amount of data being loaded. In comparison, Amazon Athena is free from all such dependencies as it does not need infrastructure at all; it just creates its own external tables on top of Amazon S3 data sets.
+
+- Amazon EMR
+
+Amazon EMR provides cluster platform to simplifies running data frameworks like Hadoop and Spark on AWS. It can process huge amounts of data for analytics and business intelligence workloads. Amazon EMR can be used to transform and move large amounts of data in and out of databases (Amazon DynamoDB) and other data storage (Amazon S3).
+
+Amazon EMR gives you full control over the configuration of your clusters and the software installed on them. You should use Amazon Athena if you want to run interactive ad hoc SQL queries against data on Amazon S3, without having to manage any infrastructure or clusters.Amazon Athena is an interactive query service that makes it easy to analyze data directly in Amazon Simple Storage Service (Amazon S3) using standard SQL
+
+
+
+https://blog.panoply.io/an-amazonian-battle-comparing-athena-and-redshift
+
+
 https://www.youtube.com/watch?v=TFLoCLXulU0 
-	
+
+
+https://aws.amazon.com/es/blogs/big-data/10-best-practices-for-amazon-redshift-spectrum/
 	
 	
 [Cloud Data Warehouse Benchmark Redshift vs Snowflake vs BigQuery | Fivetran](https://www.youtube.com/watch?v=XpaN-PqSczM) 
