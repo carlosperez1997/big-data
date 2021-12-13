@@ -1,6 +1,6 @@
 # Data lake
 
-A data lake is a storage repository that contains a large amount of raw data and is kept there until needed. Unlike a hierarchical data warehouse that stores data in files or folders, a data lake uses a flat architecture to store data.
+**A data lake is a storage repository that contains a large amount of raw data and is kept there until needed.** Unlike a hierarchical data warehouse that stores data in files or folders, a data lake uses a flat architecture to store data.
 
 A data lake is capable of providing data to the organization for a great variety of different analytical processes:
 
@@ -10,11 +10,11 @@ A data lake is capable of providing data to the organization for a great variety
 - Reports
 - Real time analysis
 
-Each element in a data lake is assigned a unique identifier and tagged with a set of extended metadata tags. When a business issue arises that needs to be resolved, we may ask the data lake for data that is related to that issue. Once obtained we can analyze that smaller data set to help obtain an answer.
+**Each element in a data lake is assigned a unique identifier and tagged with a set of extended metadata tags. When a business issue arises that needs to be resolved, we may ask the data lake for data that is related to that issue.** Once obtained we can analyze that smaller data set to help obtain an answer.
 
-The data lake is often associated with Hadoop-oriented object storage. In this scenario, an organization's data is first uploaded to the Hadoop platform, and then data mining and analysis tools are applied to the data that resides on the Hadoop cluster nodes.
+**The data lake is often associated with Hadoop-oriented object storage.** In this scenario, an organization's data is first uploaded to the Hadoop platform, and then data mining and analysis tools are applied to the data that resides on the Hadoop cluster nodes.
 
-Data lake is a way to describe any large data set in which the schema and data requirements are not defined until the data is queried.
+**Data lake is a way to describe any large data set in which the schema and data requirements are not defined until the data is queried.**
 
 ## What are the benefits of a data lake?
 
@@ -22,9 +22,9 @@ The main benefit of a data lake is the centralization of disparate content sourc
 
 Security measures in the data lake can be assigned such that access to certain information is granted to users of the data lake who do not have access to the original content source. These users have a right to the information, but cannot access it at its source for some reason.
 
-Once the content is in the data lake, it can be normalized and enriched. This can include metadata extraction, format conversion, augmentation, entity extraction, crosslinking, aggregation, de-normalization, or indexing.
+**Once the content is in the data lake, it can be normalized and enriched. This can include metadata extraction, format conversion, augmentation, entity extraction, crosslinking, aggregation, de-normalization, or indexing.**
 
-Data is prepared "as needed," reducing preparation costs over initial processing (as would be required by data warehouses. A big data framework allows this processing to be scaled to include the largest possible data sets.
+**Data is prepared "as needed," reducing preparation costs over initial processing** (as would be required by data warehouses). A big data framework allows this processing to be scaled to include the largest possible data sets.
 
 Users, from different departments, potentially scattered around the world, can have flexible access to a data lake and its content from anywhere. This increases content reuse and helps your organization more easily collect the data needed to drive business decisions.
 
@@ -34,17 +34,17 @@ Information is power, and a data lake puts the information of the entire company
 
 1. A Data Lake holds all data
 
-During data warehouse development, a considerable amount of time is spent analyzing data sources, understanding business processes, and profiling the data. The result is a highly structured data model designed for reporting. A large part of this process includes making decisions about what data to store and not store. Generally, if the data is not used to answer specific questions or in a defined report, it can be excluded from the warehouse. This is generally done to simplify the data model and also to conserve the expensive disk storage space that is used to make the data warehouse.
+During data warehouse development, a considerable amount of time is spent analyzing data sources, understanding business processes, and profiling the data. The result is a highly structured data model designed for reporting. **A large part of this process includes making decisions about what data to store and not store. Generally, if the data is not used to answer specific questions or in a defined report, it can be excluded from the warehouse.** This is generally done to simplify the data model and also to conserve the expensive disk storage space that is used to make the data warehouse.
 
 In contrast, **the data lake holds all the data.** Not just data that is currently in use, but data that can be used and even data that is never going to be used just because it might one day be used. The data is also kept all the time so that we can go back in time to any point to do the analysis.
 
-This approach is made possible because the hardware for a data lake is often very different from that used for a data warehouse. Expanding a data lake to terabytes and petabytes can be done quite inexpensively.
+This approach is made possible because the hardware for a data lake is often very different from that used for a data warehouse. **Expanding a data lake to terabytes and petabytes can be done quite inexpensively.**
 
 2. A Data Lake supports all types of data
 
 Data warehouses are generally made up of data pulled from transactional systems along with quantitative metrics and the attributes that describe them. **Non-traditional data sources such as web server logs, sensor data, social media activity, text, and images are largely ignored.** New uses continue to be found for these types of data, but consuming and storing them can be expensive and difficult.
 
-In the data lake, we store all data regardless of source and structure. We keep them in their raw form and only transform them when we are ready to use them. This approach is known as "Schema on Read" as opposed to "Schema on Write" which is the approach used in the data warehouse.
+In the data lake, we store all data regardless of source and structure. **We keep them in their raw form and only transform them when we are ready to use them. This approach is known as "Schema on Read" as opposed to "Schema on Write" which is the approach used in the data warehouse.**
 
 3. One Data Lakes supports all users
 
@@ -76,7 +76,7 @@ At data lakes, these operational reporting consumers will make use of more struc
 
 ## Row vs. Columnar Databases
 
-You might have never heard of the terms row and columnar associated with databases, but you have most certainly come across them before. Row-oriented databases are your typical transactional ones, able to handle a large number of transactions, whereas column-oriented databases usually have fewer transactions with a higher volume of data. 
+**Row-oriented databases are your typical transactional ones, able to handle a large number of transactions, whereas column-oriented databases usually have fewer transactions with a higher volume of data.** 
 
 By now, you probably have already guessed which type of database is more suitable for each processing system. **Row-oriented databases are commonly used in OLTP systems, whereas columnar ones are more suitable for OLAP.** Some examples include:
 
@@ -87,13 +87,18 @@ By now, you probably have already guessed which type of database is more suitabl
 | Oracle   |       Click House      |
 
 ### But What Makes Them Different Internally?
+
 **The key difference between both data stores is the way they are physically stored on disk.** Common HDDs are organized in blocks and rely on expensive head seek operations. Thus, sequential reads and writes tend to be much faster than random accesses.
 
 **Row-oriented databases store the whole row in the same block, if possible. Columnar databases store columns in subsequent blocks.**
 
 Amazon Redshift provides a simple and concise explanation highlighting the differences between both databases. The figure shown below consists of row-wise database storage, where each row is stored in a sequential disk block. Picking the ideal block size is important to grant optimal performance, since having a block size that’s too small or too big results in inefficient use of disk space.
 
-![](https://dz2cdn1.dzone.com/storage/temp/13215075-jscrambler-blog-redshift-1.png)
+**ROW WISE STORAGE**
+![rowwise](https://dz2cdn1.dzone.com/storage/temp/13215075-jscrambler-blog-redshift-1.png)
+
+**COLUMN WISE STORAGE**
+![columnwise](https://dz2cdn1.dzone.com/storage/temp/13215076-jscrambler-blog-redshift-2.png)
 
 The figure below portrays columnar database storage, where each disk block stores values of a single column for multiple rows. In this example, using columnar storage requires one-third of I/O disk operations to extract the columns’ values, compared to a row-wise database.
 
@@ -103,7 +108,7 @@ Let’s look at a simple example to fully understand the differences between bot
 
 Consider a database storing a total of 100GB of data, with 100 million rows and 100 columns (1GB per column). For simplification purposes, consider that the database administrator is a rookie and hasn’t implemented any indexes, partitioning, or any other optimization process on the database. With this in mind, for the analytical query:
 
-What is the average age of males?
+**What is the average age of males?**
 
 We would have these possibilities:
 
@@ -112,7 +117,12 @@ We would have these possibilities:
 
 This is obviously an extreme example — hardly any database will completely lack indexes or other optimization processes, but the goal is to give you an overview of columnar databases’ true potential for analytical purposes.
 
+![](https://dz2cdn1.dzone.com/storage/temp/13215077-jscrambler-blog-data-processing-queries-performanc.png)
+
+It is no surprise that columnar databases (i.e. PostgreSQL cstore_fdw and ClickHouse) have considerably shorter running times when compared to the other technologies. However, cstore_fdw is under-optimized for queries that require joining tables (e.g. left join) and perform a text search, as denoted by the running times for queries Q6 and Q7.
+
 ### Row and Columnar Databases Wrap-up
+
 Now that you have an overview of row-oriented and columnar databases and the main differences between them, highlighting their advantages and disadvantages shouldn’t be too hard:
 
 | Row-oriented DB: for OLTP   | Columnar DB: for OLAP |
@@ -126,19 +136,58 @@ Now that you have an overview of row-oriented and columnar databases and the mai
 | Easy to add a single row (1 insert operation)  |  Hard to add a single row (multi-column insert operation)  |
 | Hard to add a single column (multi-row insert operation)  | Easy to add a single column (1 insert operation)  |
 
+Row oriented databases are still commonly used for Online Transactional Processing (OLTP) style applications since they can manage writes to the database well. Row oriented databases are slower than C-store databases in OLAP.
+
+Row oriented databases are fast at retrieving a row or a set of rows but when performing an aggregation it brings extra data (columns) into memory which is slower than only selecting the columns that you are performing the aggregation on. In addition the number of disks the row oriented database might need to access is usually larger.
+
+Ordering the data
+
+When doing ad hoc queries there are a number of different sort orders of the data that would improve performance. For instance, we might want data listed by date, both ascending and descending. We might be looking for a lot of data on a single customer so ordering by customer could improve performance.
+
+In Row oriented databases, indexes can be created but data is rarely stored in multiple sort orders. However, **in Column oriented databases you can have the data stored in an arbitrary number of ways.** In fact, there are benefits beyond query performance. These different sort ordered columns are referred to as projections and they allow the system to be more fault tolerant, since the data is stored multiple times.
+
+## Storage Size
+
+Columnar storage has improved compression mechanisms over row-wise databases. **This happens essentially because each column, compressed as a single file, has a unique data type.** Besides, as mentioned in the previous section, these databases don’t have indexes besides the one created by default for the (primary) key.
+
+Note that for PostgreSQL (and other row-wise databases), besides the space data itself occupies, indexes also contribute to the substantial increase of storage space.
+
+![](https://dz2cdn1.dzone.com/storage/temp/13215078-jscrambler-blog-data-processing-storage-size-graph.png)
+
+## Final Remarks
+Columnar databases are rather incredible at what they do — processing massive amounts of data in a matter of seconds or even less. There are many examples out there — Redshift, BigQuery, Snowflake, MonetDB, Greenplum, MemSQL, ClickHouse — and all offer optimal performance for your analytical needs.
+
+However, **their underlying architecture introduces a considerable caveat: data ingestion.** They offer poor performance for mixed workloads, that require real-time high-throughput. In other words, **they can’t match a transactional database’s real-time data ingestion performance, which allows the insertion of data into the system quite fast.**
+
+**Combining fast ingestion and querying is the holy grail of data processing systems. Achieving an optimal mixed workload is probably not possible at this point since there is no single do-it-all technology that excels at both. Having a database for each purpose is the typical way to go, but it largely limits the performance of the whole system.**
 
 
+# Partitioning
+
+
+
+
+
+
+# Amazon Athena, Redshift and EMR
+
+https://blog.panoply.io/an-amazonian-battle-comparing-athena-and-redshift
+	
+https://discourse.getdbt.com/t/what-are-the-best-practices-to-partition-big-tables-in-redshift/1096/2
+
+https://www.youtube.com/watch?v=TFLoCLXulU0 
 	
 	
 	
-	
-	
+[Cloud Data Warehouse Benchmark Redshift vs Snowflake vs BigQuery | Fivetran](https://www.youtube.com/watch?v=XpaN-PqSczM) 
 	
 	
 	
 	
 
 https://www.powerdata.es/data-lake
+
+https://dataschool.com/data-modeling-101/row-vs-column-oriented-databases/
 
 https://www.linkedin.com/pulse/columnar-vs-row-oriented-databases-basics-2-min-read-faraz-khan/
 
