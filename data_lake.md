@@ -138,9 +138,9 @@ Now that you have an overview of row-oriented and columnar databases and the mai
 
 Row oriented databases are still commonly used for Online Transactional Processing (OLTP) style applications since they can manage writes to the database well. Row oriented databases are slower than C-store databases in OLAP.
 
-Row oriented databases are fast at retrieving a row or a set of rows but when performing an aggregation it brings extra data (columns) into memory which is slower than only selecting the columns that you are performing the aggregation on. In addition the number of disks the row oriented database might need to access is usually larger.
+**Row oriented databases are fast at retrieving a row or a set of rows but when performing an aggregation it brings extra data (columns) into memory which is slower than only selecting the columns that you are performing the aggregation on.** In addition the number of disks the row oriented database might need to access is usually larger.
 
-Ordering the data
+**Ordering the data**
 
 When doing ad hoc queries there are a number of different sort orders of the data that would improve performance. For instance, we might want data listed by date, both ascending and descending. We might be looking for a lot of data on a single customer so ordering by customer could improve performance.
 
@@ -155,6 +155,7 @@ Note that for PostgreSQL (and other row-wise databases), besides the space data 
 ![](https://dz2cdn1.dzone.com/storage/temp/13215078-jscrambler-blog-data-processing-storage-size-graph.png)
 
 ## Final Remarks
+
 Columnar databases are rather incredible at what they do — processing massive amounts of data in a matter of seconds or even less. There are many examples out there — Redshift, BigQuery, Snowflake, MonetDB, Greenplum, MemSQL, ClickHouse — and all offer optimal performance for your analytical needs.
 
 However, **their underlying architecture introduces a considerable caveat: data ingestion.** They offer poor performance for mixed workloads, that require real-time high-throughput. In other words, **they can’t match a transactional database’s real-time data ingestion performance, which allows the insertion of data into the system quite fast.**
@@ -162,19 +163,248 @@ However, **their underlying architecture introduces a considerable caveat: data 
 **Combining fast ingestion and querying is the holy grail of data processing systems. Achieving an optimal mixed workload is probably not possible at this point since there is no single do-it-all technology that excels at both. Having a database for each purpose is the typical way to go, but it largely limits the performance of the whole system.**
 
 
-# Partitioning
+# AWS Redshift
 
-https://pages.matillion.com/rs/992-UIW-731/images/Matillion_Optimizing%20Amazon%20Redshift.pdf
+AWS Redshift has the pros:
+- Massively Parallel Processing (MPP) columnar data
+store spins up quickly and can process billions of
+rows of data at the cost of just a few cents an hour
+- Amazon Redshift, on the other hand, offers a pay-as-you-go model which allows you to smoothly scale
+your capacity and costs in line with your organization’s demand for data warehousing capabilities.1
+- Amazon Redshift compute nodes can be sized up or added with a few clicks - without the burden of
+expensive licenses. Plus, Amazon Redshift is primarily a managed solution allowing you to focus on the
+data and developing your warehouse rather than maintaining it. On top of that, Amazon Redshift scales
+almost limitlessly with the ability to grow, process, and query datasets up to petabyte scales.
+
+**Amazon Redshift instances are delivered as a cluster, containing both a leader node as well as a
+number of compute nodes.** You decide at the cluster level whether to optimize your Amazon Redshift
+implementation for computing power or high storage capacity. Specifying dense storage nodes creates
+a cluster optimized for huge data volumes with hard disk drives (HDDs), while the dense compute option
+uses solid state disks (SSDs) for faster performance. Clusters can be resized at any time as long as the
+cluster itself remains large enough to house the amount of data it already contains. In the past, cluster
+resizes needed to be planned carefully as they caused the database to go into “read only” mode during
+the resize operation; manual cluster resizes still incur such outages. 
+
+The leader node serves as the point of communication for your application, which presents itself as
+single, cohesive data warehouse even though, behind the scenes, the leader node is actually coordinating
+activity across as many as 128 compute nodes. From the outside, the leader node looks like a Postgres
+database, on which Amazon Redshift’s core technology was originally based.
+
+The actual work the user requests of the cluster is done by the its compute nodes, each one a virtual
+machine. Each node contains multiple slices, which are roughly analogous to a processor or core allocated
+to work on the data contained within that particular node. The leader node allocates work to the compute
+node, which further distributes the work among its available slices. The correct use of slices allows the
+cluster make use of its massive parallel processing (MPP) capabilities.
+
+The more nodes you have, the more work your Amazon Redshift cluster is capable of. But excessive of nodes also lead to poor performance and more expense. 
+
+Traditional RDBMS platforms are row oriented: their queries must fetch entire records from disk. In many
+cases, this approach incurs large amounts of unnecessary work, especially when the end user is only
+interested in a small subset of columns from the tables in question.
+
+If you were implementing a data warehouse on one of these traditional RDBMS platforms you would
+likely design a star-schema, populate it with data, and then index the fields that users want to filter and
+group by. But because knowing all the queries your user base will ask in advance is very difficult, you end
+up indexing everything. At which point, you have got two complete copies of your data: one in the main
+tables, and one in the indices.
+
+Columnar data stores, like Amazon Redshift, solve this problem by conceding that every column of interest
+is going to need an index. 
+
+## MASSIVELY PARALLEL PROCESSING (MPP)
+
+Designing your tables to take advantage of this parallelism is critical to good performance across large datasets, which leverages Amazon Redshift’s various distribution styles. The discussion below highlights the performance benefits of these different styles.
+
+![](https://i.ytimg.com/vi/TFLoCLXulU0/maxresdefault.jpg)
+
+### ALL Distribution
+
+ALL is the simplest distribution style. Setting a table to use this distribution style instructs Amazon Redshift to make a complete copy of the table on every node in the cluster. The benefit here is that when you ask the cluster to execute a query that includes a join, each node executing that join has a local copy of the table. As such, Amazon Redshift isn’t required to copy the data across the network from node to node to complete the query. Otherwise, if a particular node is tasked with completing part of a joined query but didn’t have the required data locally, it would have to reach into other nodes in the cluster, negatively affecting query performance by incurring additional network chatter. The downside of using
+the ALL distribution style is that the table is duplicated on every node, which takes up additional space.
+This distribution style is, therefore, best suited to small reference or dimension tables that are frequently
+joined to larger, fact tables.
+
+**Pros**
+
+- Simple distribution style that doesn’t requiring copying the data, which improves performance.
+
+**Cons**
+
+- This might not be ideal for large tables since ALL distribution duplicates tables on every node, using
+additional space.
+
+### EVEN Distribution
+
+Specifying EVEN distribution balances table rows on each node in the cluster. Queries involving that
+table are then distributed over the cluster with each slice on each node working to provide the answer
+in parallel. This distribution style is an especially optimal choice when tables aren’t involved in joins.
+
+**Pros**
+
+Use EVEN distribution when you are not using joins.
+
+### Automatic Distribution
+
+Absent another distribution style specification, Amazon Redshift will use an automatic distribution.
+Tables start out with an ALL distribution style and then are switched to EVEN distribution as the
+table’s volume grows.
+
+### KEY Distribution
+
+With a KEY distribution style, you specify a column to distribute on and then, cleverly, **Amazon Redshift
+ensures that all the rows with the same value of that key are placed on the same node.** 
+
+An exemple use case of a KEY distribution would be to optimize a join between two large tables, each using the
+same column or columns for its distribution key. Here, you don’t want to set either table to ALL, because
+duplicated storage would be too expensive. EVEN distribution, throughout the course of the join, would
+likely force each table segment to interact with every segment in the other table, creating large amounts of
+network congestion and poor performance. Instead, distributing both tables on their common key or keys
+and then joining on those fields will perform well, because the common keys in both tables are guaranteed
+to be co-located on the same nodes.
+
+## Amazon Spectrum
+
+Amazon Redshift offers a huge improvement over this process, allowing a cluster to be resized with a
+few clicks, or even scaled automatically.
+
+Amazon Spectrum allows users to write SQL against very large datasets stored in Amazon Simple Storage
+Service (S3), without having to load them into Amazon Redshift. Amazon Spectrum utilizes thousands of
+nodes in order to scale independently and run rapid queries on ‘External’ tables. It also allows for tables
+to be seamlessly joined across Amazon Redshift and Amazon S3.
+
+![](https://matillion.com/wp-content/uploads/2017/10/pasted-image-0.png)
+
+[Optimizing
+Amazon Redshift](https://pages.matillion.com/rs/992-UIW-731/images/Matillion_Optimizing%20Amazon%20Redshift.pdf)
+
+
+# Best practices 
+
+## AWS Redshift
+
+### DATA LOADING OPTIMIZATION
+
+- **COPY Command**
+Use the COPY command to load data into Amazon Redshift. The first time you use the command to populate an empty table, use a significant and representative dataset so Amazon Redshift can evaluate it properly and optimize compression for your particular data distribution.
+
+A single COPY command can be used to load multiple files simultaneously. **The COPY command treats
+multiple files as one, large logical file, so the load will happen in parallel and at much higher speeds.**
+
+Ideally, the number of files should map to a multiple of the number of slices in the Amazon Redshift
+cluster - each slice loads a single file. As such, the files should be of roughly equal size so the work is
+distributed approximately evenly.
+
+- Table Distribution and Sort Keys
+
+Use the ALL distribution style for smaller dimension and reference tables.
+
+- Use EVEN for large, staging tables that are either 1) not joined to other tables or 2) are only joined to
+tables having an ALL distribution style.
+- Use the automatic distribution style (by specifying
+no distribution style at all), which will start tables off
+using the ALL distribution style and switch them to
+EVEN as they grow.
+- Use the KEY distribution style to distribute rows
+according to the values in a given column. This
+places matching values on the same node slice and
+facilitates joins between tables distributed on the
+same key.
+
+Specifying the same column as both the sort and distribution key allows Amazon Redshift’s optimizer to
+use a sort merge join, which is faster than a hash join operation.
+
+As with distribution keys, it’s best to specify sort keys prior to data loads by anticipating typical access
+paths for the table in question. Choose the best sort key, optimizing first for joins and then for filtering. 
+
+Use Spectrum to help with filtering and aggregating very large data sets. Filter and aggregate with
+Amazon Redshift Spectrum to take the load off the data warehouse. Then you can start joining data, which
+can be handled within Amazon Redshift.
+
+
+- Compression
+
+Compressing your files before they’re loaded into S3 decreases Amazon Spectrum query times and consequently reduces costs for both storage and query execution.
+
+We recommend Parquet, which is both column-oriented and compressed. In testing, these files
+processed twice as fast as CSV and compressed CSV files. However, converting existing data files to
+the Parquet format can be time-consuming; doing so is only worthwhile if the data fits squarely into a
+write-once-read-often access pattern.
+
+- Bulk Loading Data
+
+Use bulk insert operations to create copies of data already inside your Amazon Redshift cluster. These
+operations work quickly and can leverage Amazon Redshift’s built-in functions to transform data into a
+different format on the fly. Bulk insert operations include inserting SELECT statements into existing tables
+as well as the CTAS (Create Table As Select) statement. 
+
+- Organizing your Data
+
+**Organizing your data at load time means you can access this data more efficiently at a later time.** 
+
+**For example, time series data with a limited retention period should be loaded into separate tables according
+to the periodicity you desire. Such tables should have the same table structure and only be differentiated
+by the time element specified within the table name.** Doing so allows you to drop whole tables to prune
+the oldest data, which avoids the need to execute VACUUM commands after deletes.
+
+Use date/time data types to store date values rather than storing string-based versions of the same.
+Doing so allows you to use Amazon Redshift’s rich set of date functions.
 
 https://discourse.getdbt.com/t/what-are-the-best-practices-to-partition-big-tables-in-redshift/1096/2
 
+### DATA QUERY OPTIMIZATION
+
+- Vacuum
+
+VACUUM: Re-sorts rows and reclaims space in either a specified table or all tables in the current database. 
+Amazon Redshift automatically sorts data and runs VACUUM DELETE in the background. 
+
+Amazon Redshift recently added an auto-vacuum feature that removes fragmentation caused by delete operations. This automated VACUUM DELETE ONLY job runs at times when system use is low and pauses itself if user activity picks up while the job is running. However, this job only reclaims disk space for deletes and does not address any sort key maintenance needed as a result of updates. If you frequently update sort key columns we suggest scheduling VACUUM SORT ONLY operations during off hours to avoid users
+experiencing performance degradation due to resource scarcity.
+
+- Workload Management Capabilities
+
+Configure Workload Management (WLM) to ensure higher-priority queries always have access to the
+resources they need to complete in a timely manner. We suggest configuring separate queues for
+reporting, data transformation processes, superusers, and any other high-priority operations you run on
+Amazon Redshift.
+
+- ANALYZE Commands
+
+**Maintain up-to-date table statistics by running ANALYZE commands automatically on load, especially
+during the COPY processes. Doing so gives Amazon Redshift’s query optimizer the statistics it needs to
+determine how to run queries with the most efficiency.**
+
+- Partitioning Data
+
+If you are using Amazon Redshift Spectrum, we advise partitioning your data. Partitioning allows you to
+use one table definition with multiple files, each a subpart of that same table. This can increase your query
+efficiency and potentially reduce the cost of executing your queries.
+
+Date partitions can also be used to quickly and easily prune data to filter out unneeded records and focus on a specific subset. This is especially useful for time series data with which we suggest creating a table that defines the partition according to some time element, i.e. year, month, or day. This reduces costs by allowing Spectrum to process only partitions that are relevant to the query. 
+
+Best practices:
+
+- Use columns that you commonly filter by as partitions.
+- Conduct partition pruning.
+- Consider “file placement, query pattern, file size distribution, number of files in a partition, number of
+qualfied partitions” which also affect performance.
 
 
+### Partition files on frequently filtered columns
+
+If data is partitioned by one or more filtered columns, Amazon Redshift Spectrum can take advantage of partition pruning and skip scanning unneeded partitions and files. A common practice is to partition the data based on time. When you’re deciding on the optimal partition columns, consider the following:
+
+- **Columns that are used as common filters are good candidates.**
+- **Low cardinality sort keys that are frequently used in filters are good candidates for partition columns.**
+- **Multilevel partitioning is encouraged if you frequently use more than one predicate. As an example, you can partition based on both SHIPDATE and STORE.**
+- **Excessively granular partitioning adds time for retrieving partition information. However, it can help in partition pruning and reduce the amount of data scanned from Amazon S3.** Still, you might want to avoid using a partitioning schema that creates tens of millions of partitions. For example, using second-level granularity might be unnecessary.
+- Actual performance varies depending on query pattern, number of files in a partition, number of qualified partitions, and so on.
+- Measure and avoid data skew on partitioning columns.
+- **Amazon Redshift Spectrum supports DATE type in Parquet.** Take advantage of this and use DATE type for fast filtering or partition pruning.
 
 # Amazon Athena, Redshift, Kinesis and EMR
 
-https://www.youtube.com/watch?v=wEOm6aiN4ww 
-
+[Kinesis, EMR, Athena, Redshift - Choosing the Right Tool for Your Analytics Jobs](https://www.youtube.com/watch?v=wEOm6aiN4ww)
 
 - Amazon Athena
 
@@ -183,7 +413,7 @@ https://www.youtube.com/watch?v=wEOm6aiN4ww
 When should you use Athena?
 Amazon Athena should be used to run ad-hoc queries on Amazon S3 data sets using ANSI SQL. It can process structured, unstructured, and semi-structured data formats. It can also have data integration with BI tools or SQL clients using JDBC, or with QuickSight for easy visualizations. 
 
-- Amazon Redshift
+- **Amazon Redshift**
 
 **Amazon Redshift to create and manage a petabyte-scale data warehouse service in the cloud which is fully managed by AWS.** Amazon Redshift data warehouse having the computing resources known as nodes, which are organized into a group called a cluster. Each cluster runs Amazon redshift engine and handles one or more databases.
 
@@ -197,11 +427,19 @@ When should you use Redshift?
 
 Amazon Redshift requires a cluster to set itself up. A significant amount of time is required to prepare and set up the cluster. Once the cluster is ready to use, we need to load data into the tables. This also comes with a lag time depending on the amount of data being loaded. In comparison, Amazon Athena is free from all such dependencies as it does not need infrastructure at all; it just creates its own external tables on top of Amazon S3 data sets.
 
-- Amazon EMR
+- **Amazon EMR**
 
 Amazon EMR provides cluster platform to simplifies running data frameworks like Hadoop and Spark on AWS. It can process huge amounts of data for analytics and business intelligence workloads. Amazon EMR can be used to transform and move large amounts of data in and out of databases (Amazon DynamoDB) and other data storage (Amazon S3).
 
 Amazon EMR gives you full control over the configuration of your clusters and the software installed on them. You should use Amazon Athena if you want to run interactive ad hoc SQL queries against data on Amazon S3, without having to manage any infrastructure or clusters.Amazon Athena is an interactive query service that makes it easy to analyze data directly in Amazon Simple Storage Service (Amazon S3) using standard SQL
+
+- **AWS Kinesis**
+
+It is like a EL(T) tool, like Kafka.
+
+**Amazon Kinesis makes it easy to collect, process, and analyze streaming data in real time to obtain data in a timely manner and react quickly to new information.** Amazon Kinesis offers key capabilities to cost-effectively process streaming data at any scale, plus the flexibility to choose the most appropriate tools for your application requirements. With Amazon Kinesis, you can ingest real-time data such as video, audio, application logs, website click streams, and IoT telemetry data for machine learning, analytics, and other applications.
+
+- AWS S
 
 
 
