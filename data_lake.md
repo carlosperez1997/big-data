@@ -404,14 +404,20 @@ If data is partitioned by one or more filtered columns, Amazon Redshift Spectrum
 
 # Amazon Athena, Redshift, Kinesis and EMR
 
-[Kinesis, EMR, Athena, Redshift - Choosing the Right Tool for Your Analytics Jobs](https://www.youtube.com/watch?v=wEOm6aiN4ww)
+[App Next: Kinesis, EMR, Athena, Redshift - Choosing the Right Tool for Your Analytics Jobs](https://www.youtube.com/watch?v=wEOm6aiN4ww)
 
-- Amazon Athena
+[Viber: Massive Data Lakes on AWS](https://www.youtube.com/watch?v=7i1tj59pvYw)
+
+- **AWS S3**
+
+Amazon Simple Storage Service (Amazon S3) is an object storage service that offers industry-leading scalability, data availability, security, and performance. Clientes de todos los tamaños y sectores pueden almacenar y proteger cualquier cantidad de datos para prácticamente cualquier caso de uso, como los lagos de datos, las aplicaciones nativas en la nube y las aplicaciones móviles. 
+
+- **Amazon Athena**
 
 **Athena is a serverless service and does not need any infrastructure to create, manage, or scale data sets. It works directly on top of Amazon S3 data sets.** It creates external tables and therefore does not manipulate S3 data sources, working as a read-only service from an S3 perspective. Athena uses Presto and ANSI SQL to query on the data sets. It also uses HiveQL for DDL statements.
 
 When should you use Athena?
-Amazon Athena should be used to run ad-hoc queries on Amazon S3 data sets using ANSI SQL. It can process structured, unstructured, and semi-structured data formats. It can also have data integration with BI tools or SQL clients using JDBC, or with QuickSight for easy visualizations. 
+**Amazon Athena should be used to run ad-hoc queries on Amazon S3 data sets** using ANSI SQL. It can process structured, unstructured, and semi-structured data formats. It can also have data integration with BI tools or SQL clients using JDBC, or with QuickSight for easy visualizations. 
 
 - **Amazon Redshift**
 
@@ -427,19 +433,33 @@ When should you use Redshift?
 
 Amazon Redshift requires a cluster to set itself up. A significant amount of time is required to prepare and set up the cluster. Once the cluster is ready to use, we need to load data into the tables. This also comes with a lag time depending on the amount of data being loaded. In comparison, Amazon Athena is free from all such dependencies as it does not need infrastructure at all; it just creates its own external tables on top of Amazon S3 data sets.
 
+- **AWS Redshift Spectrum**
+
+Amazon Redshift Spectrum is a feature within AWS Redshift data warehousing service that lets a data analyst conduct fast, complex analysis on objects stored on the AWS cloud.
+
+With Redshift Spectrum, **an analyst can perform SQL queries on data stored in Amazon S3 buckets. This can save time and money because it eliminates the need to move data from a storage service to a database, and instead directly queries data inside an S3 bucket.** Redshift Spectrum also expands the scope of a given query because it extends beyond a user's existing Redshift data warehouse nodes and into large volumes of unstructured S3 data lakes.
+
+How Redshift Spectrum works
+
+Redshift Spectrum breaks a user query into filtered subsets that are run concurrently. Those requests are spread across thousands of AWS-managed nodes to maintain query speed and consistent performance. Redshift Spectrum can scale to run a query across more than an exabyte of data, and once the S3 data is aggregated, it's sent back to the local Redshift cluster for final processing.
+
+
 - **Amazon EMR**
 
-Amazon EMR provides cluster platform to simplifies running data frameworks like Hadoop and Spark on AWS. It can process huge amounts of data for analytics and business intelligence workloads. Amazon EMR can be used to transform and move large amounts of data in and out of databases (Amazon DynamoDB) and other data storage (Amazon S3).
+Amazon EMR provides cluster platform to simplifies running data frameworks like Hadoop and Spark on AWS. It can process huge amounts of data for analytics and business intelligence workloads. **Amazon EMR can be used to transform and move large amounts of data in and out of databases (Amazon DynamoDB) and other data storage (Amazon S3).**
 
 Amazon EMR gives you full control over the configuration of your clusters and the software installed on them. You should use Amazon Athena if you want to run interactive ad hoc SQL queries against data on Amazon S3, without having to manage any infrastructure or clusters.Amazon Athena is an interactive query service that makes it easy to analyze data directly in Amazon Simple Storage Service (Amazon S3) using standard SQL
 
+Amazon EMR provides users with Hadoop, an open-source framework that you
+can use to distribute and process data across a resizable cluster of Amazon Elastic Compute (Amazon EC2) instances. Amazon EMR also can run distributed frameworks, such as Apache Spark, which provides an advanced execution engine for fast in-memory computing.
+
 - **AWS Kinesis**
 
-It is like a EL(T) tool, like Kafka.
+Similar to Kafka.
 
 **Amazon Kinesis makes it easy to collect, process, and analyze streaming data in real time to obtain data in a timely manner and react quickly to new information.** Amazon Kinesis offers key capabilities to cost-effectively process streaming data at any scale, plus the flexibility to choose the most appropriate tools for your application requirements. With Amazon Kinesis, you can ingest real-time data such as video, audio, application logs, website click streams, and IoT telemetry data for machine learning, analytics, and other applications.
 
-- AWS S
+
 
 
 
