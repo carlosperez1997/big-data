@@ -12,12 +12,89 @@ library(dplyr)
 
 ## Spark with R
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+## Introduction
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Apache Spark as a leading tool that is democratizing our ability to process large datasets. With this as a backdrop, we introduce the R computing language, which was specifically designed to simplify data analysis. Finally, this leads us to introduce sparklyr, a project merging R and Spark into a powerful tool that is easily accessible to all.
 
-```{r cars}
-summary(cars)
+### **Hadoop**
+
+Search engines like Google were unable to store all of the web page information required to support web searches in a single computer. This meant that they had to split information into several files and store them across many machines. This approach became known as the Google File System, and was presented in a research paper published in 2003 by Google.
+
+One year later, Google published a new paper describing how to perform operations across the Google File System, an approach that came to be known as MapReduce.
+
+There are two operations in MapReduce: map and reduce. The map operation provides an arbitrary way to transform each file into a new file, whereas the reduce operation combines two files. Both operations require custom computer code, but the MapReduce framework takes care of automatically executing them across many computers at once. These two operations are sufficient to process all the data available on the web, while also providing enough flexibility to extract meaningful information from it.
+
+![](the-r-in-spark_files/figure-html/intro-mapreduce-example-1.png)
+
+Counting words is often the most basic MapReduce example, but we can also use MapReduce for much more sophisticated and interesting applications.
+
+After these papers were released by Google, a team at Yahoo worked on implementing the Google File System and MapReduce as a single open source project. This project was released in 2006 as Hadoop, with the Google File System implemented as the Hadoop Distributed File System (HDFS). The Hadoop project made distributed file-based computing accessible to a wider range of users and organizations, making MapReduce useful beyond web data processing.
+
+Although Hadoop provided support to perform MapReduce operations over a distributed file system, it still required MapReduce operations to be written with code every time a data analysis was run. To improve upon this tedious process, the Hive project, released in 2008 by Facebook, brought Structured Query Language (SQL) support to Hadoop. This meant that data analysis could now be performed at large scale without the need to write code for each MapReduce operation; instead, one could write generic data analysis statements in SQL, which are much easier to understand and write.
+
+### **Spark**
+
+In 2009, Apache Spark began as a research project at UC Berkeley’s AMPLab to improve on MapReduce. Specifically, Spark provided a richer set of verbs beyond MapReduce to facilitate optimizing code running in multiple machines. Spark also loaded data in-memory, making operations much faster than Hadoop’s on-disk storage.
+
+Spark is also easier to use than Hadoop; for instance, the word-counting MapReduce example takes about 50 lines of code in Hadoop, but it takes only 2 lines of code in Spark. As you can see, Spark is much faster, more efficient, and easier to use than Hadoop.
+
+Describing Spark as large scale implies that a good use case for Spark is tackling problems that can be solved with multiple machines. For instance, when data does not fit on a single disk drive or into memory, Spark is a good candidate to consider.
+
+Therefore, Spark is good at tackling large-scale data-processing problems, usually known as big data (datasets that are more voluminous and complex than traditional ones) but it is also good at tackling large-scale computation problems, known as big compute (tools and approaches using a large amount of CPU and memory resources in a coordinated way).
+
+### **Big Data**
+
+When working in Data Science or Machine Learning, you will be faced with increasingly large datasets or increasingly complex computations that are slow to execute or at times even impossible to process in a single computer. However, it is important to understand that Spark does not need to be the answer to all our computations problems; instead, when faced with computing challenges in R, using the following techniques can be as effective:
+
+- Sampling
+A first approach to try is to reduce the amount of data being handled, through sampling. However, we must sample the data properly by applying sound statistical principles. For instance, selecting the top results is not sufficient in sorted datasets; with simple random sampling, there might be underrepresented groups, which we could overcome with stratified sampling, which in turn adds complexity to properly select categories. 
+
+- Profiling
+You can try to understand why a computation is slow and make the necessary improvements. A profiler is a tool capable of inspecting code execution to help identify bottlenecks. It’s not always trivial to optimize.
+
+- Scaling Up
+Speeding up computation is usually possible by buying faster or more capable hardware (say, increasing your machine memory, upgrading your hard drive, or procuring a machine with many more CPUs); this approach is known as scaling up. However, there are usually hard limits as to how much a single computer can scale up, and even with significant CPUs, you need to find frameworks that parallelize computation efficiently.
+
+- Scaling Out
+Finally, we can consider spreading computation and storage across multiple machines. This approach provides the highest degree of scalability because you can potentially use an arbitrary number of machines to perform a computation. This approach is commonly known as scaling out. However, spreading computation effectively across many machines is a complex endeavor, especially without using specialized tools and frameworks like Apache Spark.
+
+### **sparklyr**
+
+sparklyr is an R interface for Apache Spark. It’s available in CRAN and works like any other CRAN package.
+
+Spark as a modern and powerful computing platform, R as an easy-to-use computing language with solid foundations in statistical methods, and sparklyr as a project bridging both technologies and communities. In a world in which the total amount of information is growing exponentially, learning how to analyze data at scale will help you to tackle the problems and opportunities humanity is facing today.
+
+From R, getting started with Spark using sparklyr and a local cluster is as easy as installing and loading the sparklyr package followed by installing Spark using sparklyr. For instance, Databricks hosts a free community edition of Spark that you can easily access from your web browser.
+
+After you are done with the prerequisites, you will first learn how to connect to Spark. We then present the most important tools and operations that you’ll use throughout the rest of this book.
+
+All Spark operations are run from R; however, monitoring execution of distributed operations is performed from Spark’s web interface, which you can load from any web browser. We then disconnect from this local cluster, which is easy to forget to do but highly recommended while working with local clusters—and in shared Spark clusters as well!
+
+Because Spark is built in the Scala programming language, which is run by the Java Virtual Machine (JVM), you also need to install Java 8 on your system.
+
+
+```{r intro}
+install.packages("sparklyr")
+packageVersion("sparklyr")
+
+library(sparklyr)
+spark_install("2.3")
+```
+
+So far, we’ve installed only a local Spark cluster. A local cluster is really helpful to get started, test code, and troubleshoot with ease. Later chapters explain where to find, install, and connect to real Spark clusters with many machines, but for the first few chapters, we focus on using local clusters.
+
+```{r connecting}
+library(sparklyr)
+sc <- spark_connect(master = "local", version = "2.3")
+```
+
+The master parameter identifies which is the “main” machine from the Spark cluster; this machine is often called the driver node. While working with real clusters using many machines, you’ll find that most machines will be worker machines and one will be the master. Since we have only a local cluster with just one machine, we will default to using "local" for now.
+
+After a connection is established, spark_connect() retrieves an active Spark connection, which most code usually names sc; you will then make use of sc to execute Spark commands.
+
+```{r using}
+cars <- copy_to(sc, mtcars)
+cars
 ```
 
 ## Including Plots
