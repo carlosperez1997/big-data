@@ -280,7 +280,7 @@ Amazon Redshift](https://pages.matillion.com/rs/992-UIW-731/images/Matillion_Opt
 
 # Best practices 
 
-## AWS Redshift
+## [AWS Redshift](https://www.youtube.com/watch?v=ZvAqJtZ5JRs)
 
 ### DATA LOADING OPTIMIZATION
 
@@ -485,4 +485,8 @@ https://dataschool.com/data-modeling-101/row-vs-column-oriented-databases/
 https://www.linkedin.com/pulse/columnar-vs-row-oriented-databases-basics-2-min-read-faraz-khan/
 
 https://medium.com/bluecore-engineering/deciding-between-row-and-columnar-stores-why-we-chose-both-3a675dab4087
+
+## [BigQuery](https://www.youtube.com/watch?v=ZVgt1-LfWW4)
+
+
 
