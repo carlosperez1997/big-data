@@ -10,11 +10,11 @@ library(dplyr)
 
 ```
 
-## Spark with R
+## [Spark with R](https://therinspark.com)
 
 ## Introduction
 
-Apache Spark as a leading tool that is democratizing our ability to process large datasets. With this as a backdrop, we introduce the R computing language, which was specifically designed to simplify data analysis. Finally, this leads us to introduce sparklyr, a project merging R and Spark into a powerful tool that is easily accessible to all.
+**Apache Spark as a leading tool that is democratizing our ability to process large datasets.** With this as a backdrop, we introduce the R computing language, which was specifically designed to simplify data analysis. Finally, this leads us to introduce **sparklyr, a project merging R and Spark into a powerful tool that is easily accessible to all.**
 
 ### **Hadoop**
 
@@ -22,13 +22,13 @@ Search engines like Google were unable to store all of the web page information 
 
 One year later, Google published a new paper describing how to perform operations across the Google File System, an approach that came to be known as MapReduce.
 
-There are two operations in MapReduce: map and reduce. The map operation provides an arbitrary way to transform each file into a new file, whereas the reduce operation combines two files. Both operations require custom computer code, but the MapReduce framework takes care of automatically executing them across many computers at once. These two operations are sufficient to process all the data available on the web, while also providing enough flexibility to extract meaningful information from it.
+There are two operations in MapReduce: map and reduce. The map operation provides an arbitrary way to transform each file into a new file, whereas the reduce operation combines two files. Both operations require custom computer code, but the **MapReduce framework takes care of automatically executing them across many computers at once.** These two operations are sufficient to process all the data available on the web, while also providing enough flexibility to extract meaningful information from it.
 
-![](the-r-in-spark_files/figure-html/intro-mapreduce-example-1.png)
+![](https://therinspark.com/the-r-in-spark_files/figure-html/intro-mapreduce-example-1.png)
 
 Counting words is often the most basic MapReduce example, but we can also use MapReduce for much more sophisticated and interesting applications.
 
-After these papers were released by Google, a team at Yahoo worked on implementing the Google File System and MapReduce as a single open source project. This project was released in 2006 as Hadoop, with the Google File System implemented as the Hadoop Distributed File System (HDFS). The Hadoop project made distributed file-based computing accessible to a wider range of users and organizations, making MapReduce useful beyond web data processing.
+After these papers were released by Google, a team at Yahoo worked on implementing the Google File System and MapReduce as a single open source project. This project was released in 2006 as Hadoop, with the Google File System implemented as the Hadoop Distributed File System (HDFS). **The Hadoop project made distributed file-based computing accessible to a wider range of users and organizations, making MapReduce useful beyond web data processing.**
 
 Although Hadoop provided support to perform MapReduce operations over a distributed file system, it still required MapReduce operations to be written with code every time a data analysis was run. To improve upon this tedious process, the Hive project, released in 2008 by Facebook, brought Structured Query Language (SQL) support to Hadoop. This meant that data analysis could now be performed at large scale without the need to write code for each MapReduce operation; instead, one could write generic data analysis statements in SQL, which are much easier to understand and write.
 
@@ -38,29 +38,29 @@ In 2009, Apache Spark began as a research project at UC Berkeley’s AMPLab to i
 
 Spark is also easier to use than Hadoop; for instance, the word-counting MapReduce example takes about 50 lines of code in Hadoop, but it takes only 2 lines of code in Spark. As you can see, Spark is much faster, more efficient, and easier to use than Hadoop.
 
-Describing Spark as large scale implies that a good use case for Spark is tackling problems that can be solved with multiple machines. For instance, when data does not fit on a single disk drive or into memory, Spark is a good candidate to consider.
+**Describing Spark as large scale implies that a good use case for Spark is tackling problems that can be solved with multiple machines. For instance, when data does not fit on a single disk drive or into memory, Spark is a good candidate to consider.**
 
-Therefore, Spark is good at tackling large-scale data-processing problems, usually known as big data (datasets that are more voluminous and complex than traditional ones) but it is also good at tackling large-scale computation problems, known as big compute (tools and approaches using a large amount of CPU and memory resources in a coordinated way).
+Therefore, Spark is good at tackling large-scale data-processing problems, usually known as big data (datasets that are more voluminous and complex than traditional ones) **but it is also good at tackling large-scale computation problems, known as big compute** (tools and approaches using a large amount of CPU and memory resources in a coordinated way).
 
 ### **Big Data**
 
-When working in Data Science or Machine Learning, you will be faced with increasingly large datasets or increasingly complex computations that are slow to execute or at times even impossible to process in a single computer. However, it is important to understand that Spark does not need to be the answer to all our computations problems; instead, when faced with computing challenges in R, using the following techniques can be as effective:
+**When working in Data Science or Machine Learning, you will be faced with increasingly large datasets or increasingly complex computations that are slow to execute or at times even impossible to process in a single computer**. However, it is important to understand that Spark does not need to be the answer to all our computations problems; instead, when faced with computing challenges in R, using the following techniques can be as effective:
 
-- Sampling
+- **Sampling**
 A first approach to try is to reduce the amount of data being handled, through sampling. However, we must sample the data properly by applying sound statistical principles. For instance, selecting the top results is not sufficient in sorted datasets; with simple random sampling, there might be underrepresented groups, which we could overcome with stratified sampling, which in turn adds complexity to properly select categories. 
 
-- Profiling
+- **Profiling**
 You can try to understand why a computation is slow and make the necessary improvements. A profiler is a tool capable of inspecting code execution to help identify bottlenecks. It’s not always trivial to optimize.
 
-- Scaling Up
-Speeding up computation is usually possible by buying faster or more capable hardware (say, increasing your machine memory, upgrading your hard drive, or procuring a machine with many more CPUs); this approach is known as scaling up. However, there are usually hard limits as to how much a single computer can scale up, and even with significant CPUs, you need to find frameworks that parallelize computation efficiently.
+- **Scaling Up**
+**Speeding up computation is usually possible by buying faster or more capable hardware (say, increasing your machine memory, upgrading your hard drive, or procuring a machine with many more CPUs); this approach is known as scaling up.** However, there are usually hard limits as to how much a single computer can scale up, and even with significant CPUs, you need to find frameworks that parallelize computation efficiently.
 
-- Scaling Out
-Finally, we can consider spreading computation and storage across multiple machines. This approach provides the highest degree of scalability because you can potentially use an arbitrary number of machines to perform a computation. This approach is commonly known as scaling out. However, spreading computation effectively across many machines is a complex endeavor, especially without using specialized tools and frameworks like Apache Spark.
+- **Scaling Out**
+Finally, we can consider **spreading computation and storage across multiple machines. This approach provides the highest degree of scalability because you can potentially use an arbitrary number of machines to perform a computation.** This approach is commonly known as scaling out. However, spreading computation effectively across many machines is a complex endeavor, especially without using specialized tools and frameworks like Apache Spark.
 
-### **sparklyr**
+### [sparklyr](https://spark.rstudio.com/dplyr/)
 
-sparklyr is an R interface for Apache Spark. It’s available in CRAN and works like any other CRAN package.
+**sparklyr is an R interface for Apache Spark.** It’s available in CRAN and works like any other CRAN package.
 
 Spark as a modern and powerful computing platform, R as an easy-to-use computing language with solid foundations in statistical methods, and sparklyr as a project bridging both technologies and communities. In a world in which the total amount of information is growing exponentially, learning how to analyze data at scale will help you to tackle the problems and opportunities humanity is facing today.
 
@@ -74,21 +74,21 @@ Because Spark is built in the Scala programming language, which is run by the Ja
 
 
 ```{r intro}
-install.packages("sparklyr")
-packageVersion("sparklyr")
+#install.packages("sparklyr")
+#packageVersion("sparklyr")
 
 library(sparklyr)
 spark_install("2.3")
 ```
 
-So far, we’ve installed only a local Spark cluster. A local cluster is really helpful to get started, test code, and troubleshoot with ease. Later chapters explain where to find, install, and connect to real Spark clusters with many machines, but for the first few chapters, we focus on using local clusters.
+So far, **we’ve installed only a local Spark cluster. A local cluster is really helpful to get started, test code, and troubleshoot with ease.** Later chapters explain where to find, install, and connect to real Spark clusters with many machines, but for the first few chapters, we focus on using local clusters.
 
 ```{r connecting}
 library(sparklyr)
 sc <- spark_connect(master = "local", version = "2.3")
 ```
 
-The master parameter identifies which is the “main” machine from the Spark cluster; this machine is often called the driver node. While working with real clusters using many machines, you’ll find that most machines will be worker machines and one will be the master. Since we have only a local cluster with just one machine, we will default to using "local" for now.
+**The master parameter identifies which is the “main” machine from the Spark cluster; this machine is often called the driver node. While working with real clusters using many machines, you’ll find that most machines will be worker machines and one will be the master.** Since we have only a local cluster with just one machine, we will default to using "local" for now.
 
 After a connection is established, spark_connect() retrieves an active Spark connection, which most code usually names sc; you will then make use of sc to execute Spark commands.
 
@@ -96,13 +96,623 @@ After a connection is established, spark_connect() retrieves an active Spark con
 cars <- copy_to(sc, mtcars)
 cars
 ```
+## Spark web interface
 
-## Including Plots
+**Most of the Spark commands are executed from the R console; however, monitoring and analyzing execution is done through Spark’s web interface.**
 
-You can also embed plots, for example:
+```{r spark_jobs}
+spark_web(sc)
+```
+
+![](https://therinspark.com/images/starting-spark-web-resized.png)
+
+Printing the cars dataset collected a few records to be displayed in the R console. You can see in the Spark web interface that a job was started to collect this information back from Spark.
+
+![](https://therinspark.com/images/starting-spark-web-storage.png)
+The Executors tab provides a view of your cluster resources. For local connections, you will find only one executor active with only 2 GB of memory allocated to Spark, and 384 MB available for computation.
+
+![](https://therinspark.com/images/starting-spark-web-executors-resized.png)
+
+## Analysis
+
+When using Spark from R to analyze data, you can use SQL (Structured Query Language) or dplyr (a grammar of data manipulation). You can use SQL through the DBI package; for instance, to count how many records are available in our cars dataset, we can run the following:
+
+```{r analysis}
+library(DBI)
+dbGetQuery(sc, "SELECT count(*) FROM mtcars")
+```
+When using dplyr, you write less code, and it’s often much easier to write than SQL.
+
+```{r analysis2}
+library(dplyr)
+print(count(cars))
+
+select(cars, hp, mpg) %>%
+  sample_n(100) %>%
+  collect() %>%
+  plot()
+```
+
+## Modelling
+
+We can use a linear model to approximate the relationship between fuel efficiency and horsepower:
+
+```{r model_stat}
+model <- ml_linear_regression(cars, mpg ~ hp)
+model
+```
+
+```{r model_pred}
+model %>%
+  ml_predict(copy_to(sc, data.frame(hp = 250 + 10 * 1:10))) %>%
+  transmute(hp = hp, mpg = prediction) %>%
+  full_join(select(cars, hp, mpg)) %>%
+  collect() %>%
+  plot()
+```
+
+
+## Data
+
+For simplicity, we copied the mtcars dataset into Spark; however, **data is usually not copied into Spark. Instead, data is read from existing data sources in a variety of formats, like plain text, CSV, JSON, Java Database Connectivity (JDBC).**
+
+```{r data}
+#spark_write_csv(cars, "cars.csv")
+cars <- spark_read_csv(sc, "cars.csv")
+```
+
+## Extensions
+
+The sparkly.nested extension is an R package that extends sparklyr to help you manage values that contain nested information. A common use case involves JSON files that contain nested lists that require preprocessing before you can do meaningful data analysis.
+
+```{r extensions}
+sparklyr.nested::sdf_nest(cars, hp) %>%
+  group_by(cyl) %>%
+  summarise(data = collect_list(data))
+```
+
+
+## Distributed R
+
+**For those few cases when a particular functionality is not available in Spark and no extension has been developed, you can consider distributing your own R code across the Spark cluster.** This is a powerful tool, but it comes with additional complexity, so you should only use it as a last resort.
+
+Suppose that we need to round all of the values across all the columns in our dataset. One approach would be running custom R code, making use of R’s round() function:
+
+```{r extensions2}
+cars %>% spark_apply(~round(.x))
+```
+
+**If you are a proficient R user, it can be quite tempting to use spark_apply() for everything, but please, don’t! spark_apply() was designed for advanced use cases where Spark falls short.**
+
+### Logs
+
+Logging is definitely less interesting than real-time data processing; however, it’s a tool you should be or become familiar with. A log is just a text file to which Spark appends information relevant to the execution of tasks in the cluster. For local clusters, we can retrieve all the recent logs by running the following:
+
+
+```{r logs1}
+spark_log(sc)
+```
+
+
+```{r logs2}
+spark_log(sc, filter = "sparklyr")
+```
+
+
+### Disconnecting
+
+For local clusters (really, any cluster), after you are done processing data, you should disconnect by running the following:
+
+```{r disconnect1}
+spark_disconnect(sc)
+```
+
+This terminates the connection to the cluster as well as the cluster tasks. If multiple Spark connections are active, or if the connection instance sc is no longer available, you can also disconnect all your Spark connections by running this command:
+
+```{r disconnect2}
+spark_disconnect_all()
+```
+
+## Analysis
+
+In a data analysis project, the main goal is to understand what the data is trying to “tell us”, hoping that it provides an answer to a specific question.
+
+![](https://therinspark.com/the-r-in-spark_files/figure-html/analysis-steps-1.png)
+
+As the diagram illustrates, we first import data into our analysis stem, where we wrangle it by trying different data transformations, such as aggregations. We then visualize the data to help us perceive relationships and trends. To gain deeper insight, we can fit one or multiple statistical models against sample data. This will help us find out whether the patterns hold true when new data is applied to them. Lastly, the results are communicated publicly or privately to colleagues and stakeholders.
+
+When working with not-large-scale datasets—as in datasets that fit in memory—we can perform all those steps from R, without using Spark. However, when data does not fit in memory or computation is simply too slow, we can slightly modify this approach by incorporating Spark. But how?
+
+For data analysis, **the ideal approach is to let Spark do what it’s good at. Spark is a(((“parallel execution”))) parallel computation engine that works at a large scale and provides a SQL engine and modeling libraries.**
+
+For example, when you need to fit a linear regression model, instead of using R’s familiar lm() function, you would use Spark’s ml_linear_regression() function. This R function then calls Spark to create this model. 
+
+**For more common data manipulation tasks, sparklyr provides a backend for dplyr. This means you can use dplyr verbs with which you’re already familiar in R, and then sparklyr and dplyr will translate those actions into Spark SQL statements, which are generally more compact and easier to read than SQL statements.**
+
+
+```{r connect1}
+library(sparklyr)
+library(dplyr)
+
+sc <- spark_connect(master = "local", version = "2.3")
+```
+
+
+## Import
+
+When using Spark with R, you need to approach importing data differently. Usually, importing means that R will read files and load them into memory; when you are using Spark, the data is imported into Spark, not R.
+
+Note: When you’re performing analysis over large-scale datasets, the vast majority of the necessary data will already be available in your Spark cluster (which is usually made available to users via Hive tables or by accessing the file system directly).
+
+**Rather than importing all data into Spark, you can request Spark to access the data source without importing it** — this is a decision you should make based on speed and performance. **Importing all of the data into the Spark session incurs a one-time up-front cost, since Spark needs to wait for the data to be loaded before analyzing it.** If the data is not imported, you usually incur a cost with every Spark operation since Spark needs to retrieve a subset from the cluster’s storage, which is usually disk drives that happen to be much slower than reading from Spark’s memory.
+
+
+```{r import1}
+cars <- copy_to(sc, mtcars)
+```
+
+Note: **When using real clusters, you should use copy_to() to transfer only small tables from R; large data transfers should be performed with specialized data transfer tools.**
+
+## Wrangle
+
+Data wrangling uses transformations to understand the data. It is often referred to as the process of transforming data from one “raw” data form into another format with the intent of making it more appropriate for data analysis.
+
+Malformed or missing values and columns with multiple attributes are common data problems you might need to fix, since they prevent you from understanding your dataset. For example, a “name” field contains the last and first name of a customer. There are two attributes (first and last name) in a single column. To be usable, we need to transform the “name” field, by changing it into “first_name” and “last_name” fields.
+
+The main goal is to write the data transformations using R syntax as much as possible.
+
+
+```{r wrangle1}
+summarize_all(cars, mean)
+```
+
+While this code is exactly the same as the code you would run when using dplyr without Spark, a lot is happening under the hood. The data is not being imported into R; instead, dplyr converts this task into SQL statements that are then sent to Spark. **The show_query() command makes it possible to peer into the SQL statement that sparklyr and dplyr created and sent to Spark.**
+
+```{r wrangle2}
+summarize_all(cars, mean) %>%
+  show_query()
+```
+
+
+```{r wrangle3}
+cars %>%
+  mutate(transmission = ifelse(am == 0, "automatic", "manual")) %>%
+  group_by(transmission) %>%
+  summarise_all(mean)
+```
+
+### Built-in functions
+
+**Spark SQL is based on Hive’s SQL conventions and functions, and it is possible to call all these functions using dplyr as well. This means that we can use any Spark SQL functions to accomplish operations that might not be available via dplyr.** We can access the functions by calling them as if they were R functions.
+
+```{r wrangle4}
+summarise(cars, mpg_percentile = percentile(mpg, 0.25))
+```
+
+There is no percentile() function in R, so dplyr passes that portion of the code as-is to the resulting SQL query:
+
+```{r wrangle5}
+summarise(cars, mpg_percentile = percentile(mpg, 0.25)) %>%
+  show_query()
+```
+
+To pass multiple values to percentile(), we can call another Hive function called array(). In this case, array() would work similarly to R’s list() function.
+
+```{r wrangle6}
+summarise(cars, mpg_percentile = percentile(mpg, array(0.25, 0.5, 0.75)))
+```
+
+**You can use the explode() function to separate Spark’s array value results into their own record.** To do this, use explode() within a mutate() command, and pass the variable containing the results of the percentile operation:
+
+
+```{r wrangle7}
+summarise(cars, mpg_percentile = percentile(mpg, array(0.25, 0.5, 0.75))) %>%
+  mutate(mpg_percentile = explode(mpg_percentile))
+```
+
+We have included a comprehensive list of all the Hive functions in the section [Hive Functions](https://therinspark.com/appendix.html#hive-functions). Glance over them to get a sense of the wide range of operations that you can accomplish with them.
+
+
+
+
+### Correlations
+
+A very common exploration technique is to calculate and visualize correlations.
+
+
+```{r corr1}
+ml_corr(cars)
+```
+
+
+We can pipe the results to other corrr functions. For example, the shave() function turns all of the duplicated results into NAs.
+
+```{r corr2}
+library(corrr)
+correlate(cars, use = "pairwise.complete.obs", method = "pearson") %>%
+  shave() %>%
+  rplot()
+```
+
+It is much easier to see which relationships are positive or negative: positive relationships are in gray, and negative relationships are black. The size of the circle indicates how significant their relationship is. The power of visualizing data is in how much easier it makes it for us to understand results.
+
+### Visualize
+
+Visualizations are a vital tool to help us find patterns in the data. It is easier for us to identify outliers in a dataset of 1,000 observations when plotted in a graph, as opposed to reading them from a list.
+
+
+```{r plot}
+library(ggplot2)
+
+ggplot(aes(as.factor(cyl), mpg), data = mtcars) + geom_col()
+
+```
+
+In Spark, there are a couple of key steps when codifying the **“push compute, collect results” approach.** **First, ensure that the transformation operations happen within Spark. In the example that follows, group_by() and summarise() will run inside Spark. The second is to bring the results back into R after the data has been transformed. Be sure to transform and then collect, in that order; if collect() is run first, R will try to ingest the entire dataset from Spark. Depending on the size of the data, collecting all of the data will slow down or can even bring down your system.**
+
+```{r collect}
+car_group <- cars %>%
+  group_by(cyl) %>%
+  summarise(mpg = sum(mpg, na.rm = TRUE)) %>%
+  collect() %>%
+  print()
+```
+
+The approach, then, is to **push as much compute to the cluster as possible**, using R primarily as an interface to Spark for the Data Scientist, which will then **collect as few results as possible** back into R memory, mostly to visualize and communicate. As shown in the slide, the more import, tidy, transform and modeling work we can push to Spark, the faster we can analyze very large data sets.
+
+![](https://spark.rstudio.com/guides/data-lakes/images/deployment/data-lakes/slide-3.png)
+
+
+
+#### Using [dbplot](https://edgararuiz.github.io/dbplot/)
+
+**The dbplot package provides helper functions for plotting with remote data. The R code dbplot that’s used to transform the data is written so that it can be translated into Spark.** 
+
+The dbplot_histogram() function makes Spark calculate the bins and the count per bin and outputs a ggplot object, which we can further refine by adding more steps to the plot object. dbplot_histogram() also accepts a binwidth argument to control the range used to compute the bins:
+
+```{r plot2}
+library(dbplot)
+
+cars %>%
+dbplot_histogram(mpg, binwidth = 3) +
+labs(title = "MPG Distribution",
+     subtitle = "Histogram over miles per gallon")
+
+```
+A raster plot returns a grid of x/y positions and the results of a given aggregation, usually represented by the color of the square.
+
+Raster: To visualize two continuous variables, we typically resort to a Scatter plot. However, this may not be practical when visualizing millions or billions of dots representing the intersections of the two variables. A Raster plot may be a better option, because it concentrates the intersections into squares that are easier to parse visually.
+
+A Raster plot basically does the same as a Histogram. It takes two continuous variables and creates discrete 2-dimensional bins represented as squares in the plot. It then determines either the number of rows inside each square or processes some aggregation, like an average.
+
+You can use dbplot_raster() to create a scatter-like plot in Spark, while only retrieving (collecting) a small subset of the remote dataset:
+
+```{r plot3}
+dbplot_raster(cars, mpg, wt, resolution = 16)
+```
+
+## Model
+
+We want to cover how to interact with models while doing data analysis.
+
+```{r modelling1}
+cars %>% 
+  ml_linear_regression(mpg ~ .) %>%
+  summary()
+```
+
+At this point, it is very easy to experiment with different features, we can simply change the R formula from mpg ~ . to, say, mpg ~ hp + cyl to only use horsepower and cylinders as features:
+
+```{r modelling2}
+cars %>% 
+  ml_linear_regression(mpg ~ hp + cyl) %>%
+  summary()
+```
+
+It is also very easy to iterate with other kinds of models. The following one replaces the linear model with a generalized linear model:
+
+```{r modelling3}
+cars %>% 
+  ml_generalized_linear_regression(mpg ~ hp + cyl) %>%
+  summary()
+```
+
+### Cache
+
+The examples in this chapter are built using a very small dataset. **In real-life scenarios, large amounts of data are used for models. If the data needs to be transformed first, the volume of the data could exact a heavy toll on the Spark session. Before fitting the models, it is a good idea to save the results of all the transformations in a new table loaded in Spark memory.**
+
+The **compute() command** can take the end of a dplyr command and save the results to Spark memory:
+
+```{r cache1}
+cached_cars <- cars %>% 
+  mutate(cyl = paste0("cyl_", cyl)) %>%
+  compute("cached_cars")
+```
+
+```{r cache2}
+cached_cars %>%
+  ml_linear_regression(mpg ~ .) %>%
+  summary()
+```
+
+# Modelling
+
+We explore MLlib, the component of Spark that allows you to write high-level code to perform predictive modeling on distributed data, and use data wrangling in the context of feature engineering and exploratory data analysis.
+
+The R interface to Spark provides modeling algorithms that should be familiar to R users, and we’ll go into detail in the chapter. For instance, we’ve already used ml_linear_regression(cars, mpg ~ .), but we could run ml_logistic_regression(cars, am ~ .) just as easily.
+
+The long list of MLlib functions included in the appendix of this book; Spark supports Decision Trees, Gradient-Boosted Trees, Accelerated Failure Time Survival Regression, Isotonic Regression, K-Means Clustering, Gaussian Mixture Clustering, and more.
+
+The ML interface in sparklyr has been designed to minimize the cognitive effort for moving from a local, in-memory, native-R workflow to the cluster, and back. 
+
+You can download this dataset as follows:
+
+```{r download1}
+download.file(
+  "https://github.com/r-spark/okcupid/raw/master/profiles.csv.zip",
+  "okcupid.zip")
+
+unzip("okcupid.zip", exdir = "data")
+unlink("okcupid.zip")
+```
+
+
+We don’t recommend sampling this dataset since the model won’t be nearly as rich; however, if you have limited hardware resources, you are welcome to sample it as follows:
+
+```{r download2}
+profiles <- read.csv("data/profiles.csv")
+#write.csv(dplyr::sample_n(profiles, 10^3),
+#          "data/profiles.csv", row.names = FALSE)
+```
+
+The examples in this chapter utilize small datasets so that you can easily follow along in local mode. In practice, if your dataset fits comfortably in memory on your local machine, you might be better off using an efficient, nondistributed implementation of the modeling algorithm. For example, you might want to use the ranger package instead of ml_random_forest_classifier().
+
+## **EDA**
+
+Exploratory data analysis (EDA), in the context of predictive modeling, is the exercise of looking at excerpts and summaries of the data. Some common objectives:
+
+- Check for data quality; confirm meaning and prevalence of missing values and reconcile statistics against existing controls.
+- Understand univariate relationships between variables.
+- Perform an initial assessment on what variables to include and what transformations need to be done on them.
+
+```{r eda}
+library(sparklyr)
+library(ggplot2)
+library(dbplot)
+library(dplyr)
+
+sc <- spark_connect(master = "local", version = "2.3")
+
+okc <- spark_read_csv(
+  sc, 
+  "data/profiles.csv", 
+  escape = "\"", 
+  memory = FALSE,
+  options = list(multiline = TRUE)
+) %>%
+  mutate(
+    height = as.numeric(height),
+    income = ifelse(income == "-1", NA, as.numeric(income))
+  ) %>%
+  mutate(sex = ifelse(is.na(sex), "missing", sex)) %>%
+  mutate(drinks = ifelse(is.na(drinks), "missing", drinks)) %>%
+  mutate(drugs = ifelse(is.na(drugs), "missing", drugs)) %>%
+  mutate(job = ifelse(is.na(job), "missing", job))
+```
+
+We also convert the height and income columns to numeric types and recode missing values in the string columns. Note that it might very well take a few tries of specifying different parameters to get the initial data ingest correct, and sometimes you might need to revisit this step after you learn more about the data during modeling.
+
+```{r okc}
+glimpse(okc)
+```
+
+
+```{r okc2}
+okc <- okc %>%
+  mutate(
+    not_working = ifelse(job %in% c("student", "unemployed", "retired"), 1 , 0)
+  )
+
+okc %>% 
+  group_by(not_working) %>% 
+  tally()
+```
+
+Before we proceed further, let’s perform an initial split of our data into a training set and a testing set and put away the latter. In practice, this is a crucial step because we would like to have a holdout set that we set aside at the end of the modeling process to evaluate model performance. If we were to include the entire dataset during EDA, information from the testing set could “leak” into the visualizations and summary statistics and bias our model-building process even though the data is not used directly in a learning algorithm.
+
+```{r okc3}
+data_splits <- sdf_random_split(okc, training = 0.8, testing = 0.2, seed = 42)
+okc_train <- data_splits$training
+okc_test <- data_splits$testing
+```
+
+We can quickly look at the distribution of our response variable:
+
+```{r okc4}
+okc_train %>%
+  group_by(not_working) %>%
+  tally() %>%
+  mutate(frac = n / sum(n))
+```
+
+Using the sdf_describe() function, we can obtain numerical summaries of specific columns:
+
+```{r okc5}
+sdf_describe(okc_train, cols = c("age", "income"))
+```
+
+We can also utilize the dbplot package to plot distributions of these variables.
+
+```{r okc6}
+dbplot_histogram(okc_train, age)
+```
+
+A common EDA exercise is to look at the relationships between the response and the individual predictors. Often, you might have prior business knowledge of what these relationships should be, so this can serve as a data quality check.
+
+```{r okc7}
+prop_data <- okc_train %>%
+  mutate(religion = regexp_extract(religion, "^\\\\w+", 0)) %>% 
+  group_by(religion, not_working) %>%
+  tally() %>%
+  group_by(religion) %>%
+  summarize(
+    count = sum(n),
+    prop = sum(not_working * n) / sum(n)
+  ) %>%
+  mutate(se = sqrt(prop * (1 - prop) / count)) %>%
+  collect()
+
+prop_data
+```
+
+Note that prop_data is a small DataFrame that has been collected into memory in our R session, we can take advantage of ggplot2 to create an informative visualization:
+
+```{r okc8}
+prop_data %>%
+  ggplot(aes(x = religion, y = prop)) + geom_point(size = 2) +
+  geom_errorbar(aes(ymin = prop - 1.96 * se, ymax = prop + 1.96 * se),
+                width = .1) +
+  geom_hline(yintercept = sum(prop_data$prop * prop_data$count) /
+                              sum(prop_data$count))
+```
+
+We take a look at the relationship between a couple of predictors: alcohol use and drug use. We would expect there to be some correlation between them. You can compute a contingency table via sdf_crosstab():
+
+```{r okc9}
+contingency_tbl <- okc_train %>% 
+  sdf_crosstab("drinks", "drugs") %>%
+  collect()
+
+contingency_tbl
+```
+
+We can visualize this contingency table using a mosaic plot:
+
+```{r okc10}
+library(ggmosaic)
+library(forcats)
+library(tidyr)
+
+contingency_tbl %>%
+  rename(drinks = drinks_drugs) %>%
+  gather("drugs", "count", missing:sometimes) %>%
+  mutate(
+    drinks = as_factor(drinks) %>% 
+      fct_relevel("missing", "not at all", "rarely", "socially", 
+                  "very often", "desperately"),
+    drugs = as_factor(drugs) %>%
+      fct_relevel("missing", "never", "sometimes", "often")
+  ) %>%
+  ggplot() +
+  geom_mosaic(aes(x = product(drinks, drugs), fill = drinks, 
+                  weight = count))
+```
+
+
+To further explore the relationship between these two variables, we can perform correspondence analysis18 using the FactoMineR package. This technique enables us to summarize the relationship between the high-dimensional factor levels by mapping each level to a point on the plane. 
+
+
+```{r okc11}
+dd_obj <- contingency_tbl %>% 
+  tibble::column_to_rownames(var = "drinks_drugs") %>%
+  FactoMineR::CA(graph = FALSE)
+```
+
+We can then plot the results using ggplot.
+
+```{r okc12}
+dd_drugs <-
+  dd_obj$row$coord %>%
+  as.data.frame() %>%
+  mutate(
+    label = gsub("_", " ", rownames(dd_obj$row$coord)),
+    Variable = "Drugs"
+  )
+
+dd_drinks <-
+  dd_obj$col$coord %>%
+  as.data.frame() %>%
+  mutate(
+    label = gsub("_", " ", rownames(dd_obj$col$coord)),
+    Variable = "Alcohol"
+  )
+  
+ca_coord <- rbind(dd_drugs, dd_drinks)
+  
+ggplot(ca_coord, aes(x = `Dim 1`, y = `Dim 2`, 
+                     col = Variable)) +
+  geom_vline(xintercept = 0) +
+  geom_hline(yintercept = 0) +
+  geom_text(aes(label = label)) +
+  coord_equal()
+```
+
+We see that the correspondence analysis procedure has transformed the factors into variables called principal coordinates, which correspond to the axes in the plot and represent how much information in the contingency table they contain. We can, for example, interpret the proximity of “drinking often” and “using drugs very often” as indicating association.
+
+## Feature Engineering
+
+The feature engineering exercise comprises transforming the data to increase the performance of the model. This can include things like centering and scaling numerical values and performing string manipulation to extract meaningful variables.
+
+```{r fea1}
+scale_values <- okc_train %>%
+  summarize(
+    mean_age = mean(age),
+    sd_age = sd(age)
+  ) %>%
+  collect()
+
+scale_values
+```
+
+We can then use these to transform the dataset:
+
+```{r fea2}
+okc_train <- okc_train %>%
+  mutate(scaled_age = (age - !!scale_values$mean_age) /
+           !!scale_values$sd_age)
+```
+
+
+Since some of the profile features are multiple-select—in other words, a person can choose to associate multiple options for a variable—we need to process them before we can build meaningful models.
+
+```{r fea3}
+okc_train %>%
+  group_by(ethnicity) %>%
+  tally()
+```
+
+One way to proceed would be to treat each combination of races as a separate level, but that would lead to a very large number of levels, which becomes problematic in many algorithms. To better encode this information, we can create dummy variables for each race, as follows:
+
+```{r fea4}
+ethnicities <- c("asian", "middle eastern", "black", "native american", "indian", 
+                 "pacific islander", "hispanic / latin", "white", "other")
+ethnicity_vars <- ethnicities %>% 
+  purrr::map(~ expr(ifelse(like(ethnicity, !!.x), 1, 0))) %>%
+  purrr::set_names(paste0("ethnicity_", gsub("\\s|/", "", ethnicities)))
+okc_train <- mutate(okc_train, !!!ethnicity_vars)
+okc_train %>% 
+  select(starts_with("ethnicity_")) %>%
+  glimpse()
+```
+
+For the free text fields, a straightforward way to extract features is counting the total number of characters. We will store the train dataset in Spark’s memory with compute() to speed up computation.
+
+```{r fea5}
+okc_train <- okc_train %>%
+  mutate(
+    essay_length = char_length(paste(!!!syms(paste0("essay", 0:9))))
+  ) %>% compute()
+```
+
+So let’s save it first as a Parquet file—an efficient file format ideal for numeric data:
+
+```{r fea6}
+spark_write_parquet(okc_train, "data/okc-train.parquet")
+```
+
+
+
 
 ```{r pressure, echo=FALSE}
 plot(pressure)
 ```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
