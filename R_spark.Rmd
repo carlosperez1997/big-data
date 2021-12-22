@@ -1189,22 +1189,24 @@ spark_disconnect(sc)
 
 ## Deployment
 
-What we have just demonstrated bears emphasizing: by collaborating within the framework of ML Pipelines, we reduce friction among different personas in a data science team. In particular, we cut down on the time from modeling to deployment.
+In many cases, a data science project does not end with just a slide deck with insights and recommendations. Instead, the business problem at hand might require scoring new data points on a schedule or on-demand in real time. For example, a bank might want to evaluate its mortgage portfolio risk nightly or provide instant decisions on credit card applications. **This process of taking a model and turning it into a service that others can consume is usually referred to as deployment or productionization.** Historically, there was a large gap between the analyst who built the model and the engineer who deployed it: the former might work in R and develop extensive documentation on the scoring mechanism, so that the latter can reimplement the model in C++ or Java. This practice, which might easily take months in some organizations, is less prevalent today, but is almost always unnecessary in Spark ML workflows.
 
-In many cases, a data science project does not end with just a slide deck with insights and recommendations. Instead, the business problem at hand might require scoring new data points on a schedule or on-demand in real time. For example, a bank might want to evaluate its mortgage portfolio risk nightly or provide instant decisions on credit card applications. This process of taking a model and turning it into a service that others can consume is usually referred to as deployment or productionization. Historically, there was a large gap between the analyst who built the model and the engineer who deployed it: the former might work in R and develop extensive documentation on the scoring mechanism, so that the latter can reimplement the model in C++ or Java. This practice, which might easily take months in some organizations, is less prevalent today, but is almost always unnecessary in Spark ML workflows.
+The aforementioned nightly portfolio risk and credit application scoring examples represent two modes of ML deployment known as batch and real time. Loosely, **batch processing implies processing many records at the same time, and that execution time is not important as long it is reasonable (often on the scale of minutes to hours).** On the other hand, **real-time processing implies scoring one or a few records at a time, but the latency is crucial (on the scale of <1 second).** 
 
-The aforementioned nightly portfolio risk and credit application scoring examples represent two modes of ML deployment known as batch and real time. Loosely, batch processing implies processing many records at the same time, and that execution time is not important as long it is reasonable (often on the scale of minutes to hours). On the other hand, real-time processing implies scoring one or a few records at a time, but the latency is crucial (on the scale of <1 second). Let’s turn now to see how we can take our OKCupid pipeline model to “production”.
-
-5.6.1 Batch Scoring
-For both scoring methods, batch and real time, we will expose our model as web services, in the form of an API over the Hypertext Transfer Protocol (HTTP). This is the primary medium over which software communicates. By providing an API, other services or end users can utilize our model without any knowledge of R or Spark. The plumber R package enables us to do this very easily by annotating our prediction function.
+#### Batch Scoring
+**For both scoring methods, batch and real time, we will expose our model as web services, in the form of an API over the Hypertext Transfer Protocol (HTTP).** This is the primary medium over which software communicates. By providing an API, other services or end users can utilize our model without any knowledge of R or Spark. The plumber R package enables us to do this very easily by annotating our prediction function.
 
 You will need make sure that plumber, callr, and the httr package are installed by running the following:
 
-install.packages(c("plumber", "callr", "httr"))
-The callr package provides support to run R code in separate R sessions; it is not strictly required, but we will use it to start a web service in the background. The httr package allows us to use web APIs from R.
+```{r batch1}
+## install.packages(c("plumber", "callr", "httr"))
+```
+
+**The callr package provides support to run R code in separate R sessions**; it is not strictly required, but we will use it to start a web service in the background. The httr package allows us to use web APIs from R.
 
 In the batch scoring use case, we simply initiate a Spark connection and load the saved model. Save the following script as plumber/spark-plumber.R:
 
+```{r batch2}
 library(sparklyr)
 sc <- spark_connect(master = "local", version = "2.3")
 
@@ -1225,40 +1227,57 @@ score_spark <- function(age, sex, drinks, drugs, essay_length) {
   ml_transform(spark_model, new_data_tbl) %>%
     dplyr::pull(prediction)
 }
+``` 
+
 We can then initialize the service by executing the following:
 
+```{r batch3}
 service <- callr::r_bg(function() {
   p <- plumber::plumb("plumber/spark-plumber.R")
   p$run(port = 8000)
 })
+```
+
 This starts the web service locally, and then we can query the service with new data to be scored; however, you might need to wait a few seconds for the Spark service to initialize:
 
+```{r batch4}
 httr::content(httr::POST(
   "http://127.0.0.1:8000/predict",
   body = '{"age": 42, "sex": "m", "drinks": "not at all", 
            "drugs": "never", "essay_length": 99}'
 ))
-[[1]]
-[1] 0
+```
+
 This reply tell us that this particular profile is likely to not be unemployed, that is, employed. We can now terminate the plumber service by stopping the callr service:
 
+```{r batch5}
 service$interrupt()
+```
+
 If we were to time this operation (e.g., with system.time()), we see that the latency is on the order of hundreds of milliseconds, which might be appropriate for batch applications but is insufficient for real time. The main bottleneck is the serialization of the R DataFrame to a Spark DataFrame and back. Also, it requires an active Spark session, which is a heavy runtime requirement. To ameliorate these issues, we discuss next a deployment method more suitable for real-time deployment.
 
-5.6.2 Real-Time Scoring
+#### Real-Time Scoring
+
 For real-time production, we want to keep dependencies as light as possible so we can target more platforms for deployment. We now show how we can use the mleap package, which provides an interface to the MLeap library, to serialize and serve Spark ML models. MLeap is open source (Apache License 2.0) and supports a wide range of, though not all, Spark ML transformers. At runtime, the only prerequisites for the environment are the Java Virtual Machine (JVM) and the MLeap runtime library. This avoids both the Spark binaries and expensive overhead in converting data to and from Spark DataFrames.
 
 Since mleap is a sparklyr extension and an R package, first we need to install it from CRAN:
 
+```{r real1}
 install.packages("mleap")
+```
+
 It then must be loaded when spark_connect() is called; so let’s restart your R session, establish a new Spark connection,20 and load the pipeline model that we previously saved:
 
+```{r real2}
 library(sparklyr)
 library(mleap)
 sc <- spark_connect(master = "local", version = "2.3")
 spark_model <- ml_load(sc, "spark_model")
+```
+
 The way we save a model to MLeap bundle format is very similar to saving a model using the Spark ML Pipelines API; the only additional argument is sample_input, which is a Spark DataFrame with schema that we expect new data to be scored to have:
 
+```{r real3}
 sample_input <- data.frame(
   sex = "m",
   drinks = "not at all",
@@ -1271,15 +1290,24 @@ sample_input <- data.frame(
 sample_input_tbl <- copy_to(sc, sample_input)
 
 ml_write_bundle(spark_model, sample_input_tbl, "mleap_model.zip", overwrite = TRUE)
+```
+
 We can now deploy the artifact we just created, mleap_model.zip, in any device that runs Java and has the open source MLeap runtime dependencies, without needing Spark or R! In fact, we can go ahead and disconnect from Spark already:
 
+```{r real4}
 spark_disconnect(sc)
+```
+
 Before we use this MLeap model, make sure the runtime dependencies are installed:
 
+```{r real5}
 mleap::install_maven()
 mleap::install_mleap()
+```
+
 To test this model, we can create a new plumber API to expose it. The script plumber/mleap-plumber.R is very similar to the previous example:
 
+```{r real6}
 library(mleap)
 
 mleap_model <- mleap_load_bundle("mleap_model.zip")
@@ -1296,26 +1324,94 @@ score_spark <- function(age, sex, drinks, drugs, essay_length) {
   )
   mleap_transform(mleap_model, new_data)$prediction
 }
+```
+
 And the way we launch the service is exactly the same:
 
+```{r real7}
 service <- callr::r_bg(function() {
   p <- plumber::plumb("plumber/mleap-plumber.R")
   p$run(port = 8000)
 })
+```
+
 We can run the exact same code we did previously to test unemployment predictions in this new service:
 
+```{r real8}
 httr::POST(
   "http://127.0.0.1:8000/predict",
   body = '{"age": 42, "sex": "m", "drinks": "not at all", 
            "drugs": "never", "essay_length": 99}'
 ) %>%
   httr::content()
-[[1]]
-[1] 0
+```
+
 If we were to time this operation, we would see that the service now returns predictions in tens of milliseconds.
 Let’s stop this service and then wrap up this chapter:
 
+```{r real9}
 service$interrupt()
+```
+
+# Clusters
+
+There are three major trends in cluster computing worth discussing: on-premises, cloud computing, and Kubernetes. Framing these trends over time will help us understand how they came to be, what they are, and what their future might be.
+
+For on-premises clusters, you or someone in your organization purchased physical computers that were intended to be used for cluster computing. The computers in this cluster are made of off-the-shelf hardware, meaning that someone placed an order to purchase computers usually found on store shelves, or high-performance hardware, meaning that a computing vendor provided highly customized computing hardware, which also comes optimized for high-performance network connectivity, power consumption, and so on.
+
+When purchasing hundreds or thousands of computing instances, it doesn’t make sense to keep them in the usual computing case that we are all familiar with; instead, it makes sense to stack them as efficiently as possible on top of one another to minimize the space the use. This group of efficiently stacked computing instances is known as a rack.
+
+Amazon started as an online bookstore, but over the years it grew to sell much more than just books. Along with its online store growth, its datacenters also grew in size. In 2002, Amazon considered renting servers in their datacenters to the public, and two years later, Amazon Web Services (AWS) launched as a way to let anyone rent servers in the company’s datacenters on demand, meaning that you did not need to purchase, configure, maintain, or tear down your own clusters; rather, you could rent them directly from AWS.
+
+This on-demand compute model is what we know today as cloud computing. In the cloud, the cluster you use is not owned by you, and it’s not in your physical building; instead it’s a datacenter owned and managed by someone else.
+
+While the benefits of processing data in the cloud were obvious for many years, picking a cloud provider had the unintended side effect of locking in organizations with one particular provider, making it hard to switch between providers or back to on-premises clusters. Kubernetes, announced by Google in 2014, is an open source system for managing containerized applications across multiple hosts. In practice, it makes it easier to deploy across multiple cloud providers and on-premises as well.
+
+In summary, we have seen a transition from on-premises to cloud computing and, more recently, Kubernetes. These technologies are often loosely described as the private cloud, the public cloud, and as one of the orchestration services that can enable a hybrid cloud, respectively.
+
+## On-premise
+
+These clusters can be highly customized and controlled; however, they can also incur higher initial expenses and maintenance costs.
+
+When using on-premises Spark clusters, there are two concepts you should consider:
+
+Cluster manager
+In a similar way as to how an operating system (like Windows or macOS) allows you to run multiple applications in the same computer, a cluster manager allows multiple applications to be run in the same cluster. You need to choose one yourself when working with on-premises clusters.
+Spark distribution
+While you can install Spark from the Apache Spark site, many organizations partner with companies that can provide support and enhancements to Apache Spark, which we often refer to as Spark distributions.
+
+In Spark Standalone, Spark uses itself as its own cluster manager, which allows you to use Spark without installing additional software in your cluster. This can be useful if you are planning to use your cluster to run only Spark applications; if this cluster is not dedicated to Spark, a generic cluster manager like YARN, Mesos, or Kubernetes would be more suitable. 
+
+## Cloud
+
+In cloud services, the compute instances are billed for as long the Spark cluster runs; your billing starts when the cluster launches, and it stops when the cluster stops. This cost needs to be multiplied by the number of instances reserved for your cluster. So, for instance, if a cloud provider charges $1.00 per compute instance per hour, and you start a three-node cluster that you use for one hour and 10 minutes, it is likely that you’ll receive a bill for $1.00 x 2 hours x 3 nodes = $6.00. 
+
+Be aware that, while computing costs can be quite low for small clusters, accidentally leaving a cluster running can cause significant billing expenses. Therefore, it’s worth taking the extra time to check twice that your cluster is terminated when you no longer need it. It’s also a good practice to monitor costs daily while using clusters to make sure your expectations match the daily bill.
+
+### Amazon
+
+Amazon provides cloud services through AWS; more specifically, it provides an on-demand Spark cluster through Amazon EMR.
+
+[Running sparklyr in AWS EMR](https://aws.amazon.com/es/blogs/big-data/running-sparklyr-rstudios-r-interface-to-spark-on-amazon-emr/) This post introduced the launch of sparklyr and instructions to configure Amazon EMR clusters with sparklyr. For instance, it suggests you can use the Amazon Command Line Interface to launch a cluster with three nodes.
+
+### Google
+
+Google provides Google Cloud Dataproc as a cloud-based managed Spark and Hadoop service offered on Google Cloud Platform (GCP). Dataproc utilizes many GCP technologies, such as Google Compute Engine and Google Cloud Storage, to offer fully managed clusters running popular data processing frameworks such as Apache Hadoop and Apache Spark.
+
+
+
+## Kubernetes
+
+Kubernetes is an open source container orchestration system for automating deployment, scaling, and management of containerized applications that was originally designed by Google and is now maintained by the Cloud Native Computing Foundation (CNCF). Kubernetes was originally based on Docker, while, like Mesos, it’s also based on Linux Cgroups.
+
+Kubernetes can execute many cluster applications and frameworks that you can highly customize by using container images with specific resources and libraries. This allows a single Kubernetes cluster to be used for many different purposes beyond data analysis, which in turn helps organizations manage their compute resources with ease.
+
+
+# Connections
+
+
+
+## 
 
 
 ```{r pressure, echo=FALSE}
